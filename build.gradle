@@ -1,0 +1,110 @@
+import groovyx.gpars.GParsPool
+import net.masterthought.cucumber.Configuration
+import net.masterthought.cucumber.ReportBuilder
+import net.masterthought.cucumber.Reportable
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+
+buildscript {
+    repositories {
+        maven {
+            url "http://repo.bodar.com"
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.codehaus.gpars:gpars:1.2.1",
+                "net.masterthought:cucumber-reporting:3.9.0"
+    }
+}
+
+repositories {
+    maven {
+        url "http://repo.bodar.com"
+    }
+    mavenCentral()
+}
+dependencies {
+    compile group: 'junit', name: 'junit', version:'4.12'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.12.0'
+    compile group: 'info.cukes', name: 'cucumber-junit', version: '1.2.5'
+    compile group: 'info.cukes', name: 'cucumber-java', version: '1.2.5'
+    compile group: 'info.cukes', name: 'cucumber-weld', version: '1.2.5'
+    compile group: 'info.cukes', name: 'cucumber-core', version: '1.2.5'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    compile group: 'net.masterthought', name: 'cucumber-reporting', version: '3.9.0'
+    compile group: 'com.googlecode.totallylazy', name: 'totallylazy', version: '1.86'
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.12'
+    compile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+    compile files("$buildDir/classes/main")
+}
+
+task runInParallel{
+    doLast {
+        def testProperties = "-Dlog4j.configurationFile=${buildDir}/classes/main/log4j2.xml"
+        runCucumberTests(testProperties, "~@Nothing")
+    }
+}
+
+
+def runCucumberTests(testProperties, tag) {
+    def features = fileTree(dir: "${project.projectDir}/src/main/resources/features").include '**/*.feature'
+    // the number of threads should be number of selenium nodes, in order to get optimization of test running speed.
+    GParsPool.withPool(3) {
+        features.eachParallel { File file ->
+            exec {
+                executable "sh"
+                args "-c", "mkdir -p ${reporting.baseDir}/cucumber" +
+                        "&& java ${testProperties} " +
+                        "-cp ${sourceSets.main.runtimeClasspath.asPath} " +
+                        "cucumber.api.cli.Main " +
+                        "--glue classpath:steps " +
+                        "${project.projectDir}/src/main/resources/features/${file.name} " +
+                        "--plugin json:${reporting.baseDir}/cucumber/${file.name}.json " +
+                        "--plugin junit:${reporting.baseDir}/cucumber/${file.name}.xml " +
+                        "--tags ${tag}"
+            }
+            println("${file.name}: Scenario output: ${reporting.baseDir}/cucumber/${file.name}.xml ")
+        }
+    }
+    generateReport()
+}
+
+
+task runInSequence{
+    doLast {
+        def arglist = ["-p","html:build/reports/cucumber", "-p", "pretty", "--glue", "steps", "${project.projectDir}/src/main/resources/features"]
+
+        return javaexec {
+            main = "cucumber.api.cli.Main"
+            classpath = sourceSets.main.runtimeClasspath
+            args = arglist
+        }
+    }
+}
+
+
+def generateReport() {
+    def jsonReports = fileTree(dir: "${reporting.baseDir}/cucumber/").include '**/*.json'.toString()
+    File reportOutputDirectory = new File("${reporting.baseDir}/cucumber");
+
+    List<String> jsonReportFiles = new ArrayList<String>();
+    jsonReports.each { File file ->
+        jsonReportFiles.add("${reporting.baseDir}/cucumber/${file.name}".toString());
+    }
+
+    Configuration configuration = new Configuration(reportOutputDirectory, "E2E-Test-inParallel");
+    // optional configuration
+    configuration.setParallelTesting(true);
+    configuration.setRunWithJenkins(false);
+
+    ReportBuilder reportBuilder = new ReportBuilder(jsonReportFiles, configuration);
+    Reportable result = reportBuilder.generateReports();
+    println("\nReport available on: ${reporting.baseDir}/cucumber/cucumber-html-reports/overview-features.html")
+
+}
