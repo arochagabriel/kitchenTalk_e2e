@@ -20,7 +20,7 @@ public class WebDriverProducer {
     public static WebDriver driver;
     public WebDriverWait wait;
     private static final String GRID_HUB_URL = "http://127.0.1.1:4444/wd/hub";
-    private String myUrl = PropertyUtil.getInstance().getProperties().getProperty("my.url");
+    private String myUrl = PropertyUtil.getInstance().getProperties().getProperty("url");
 
     @Before()
     /*
