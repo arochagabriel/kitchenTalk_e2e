@@ -1,0 +1,51 @@
+language: java
+jdk:
+  - oraclejdk8
+env:
+  global:
+  - GRADLE_HOME=$SHIPPABLE_BUILD_DIR/gradle-4.2 
+  - GRADLE_USER_HOME=$SHIPPABLE_BUILD_DIR
+  - GRADLE_TEST_RESULTS_DIR=shippable/testresults
+branches:
+  only:
+  - master
+build:
+  cache: true
+  pre_ci:
+  - if [[ -n $(docker ps -aqf "name=hub") ]]; then docker stop hub && docker rm hub; fi
+  - if [[ -n $(docker ps -aqf "name=chromenode1") ]]; then docker stop chromenode1 && docker rm chromenode1; fi
+  - if [[ -n $(docker ps -aqf "name=chromenode2") ]]; then docker stop chromenode2 && docker rm chromenode2; fi
+  - if [[ -n $(docker ps -aqf "name=chromenode3") ]]; then docker stop chromenode3 && docker rm chromenode3; fi
+  - docker build -f $SHIPPABLE_BUILD_DIR/prod/nodes/Dockerfile.chrome -t mcp/selenium-node-chrome $SHIPPABLE_BUILD_DIR
+  - docker build -f $SHIPPABLE_BUILD_DIR/prod/hub/Dockerfile.hub -t mcp/selenium-hub $SHIPPABLE_BUILD_DIR
+  - docker run -i -d --name hub -p 4444:4444 mcp/selenium-hub
+  - docker run -i -d --name chromenode1 --link hub:hub -P -v /dev/shm:/dev/shm mcp/selenium-node-chrome
+  - docker run -i -d --name chromenode2 --link hub:hub -P -v /dev/shm:/dev/shm mcp/selenium-node-chrome
+  - docker run -i -d --name chromenode3 --link hub:hub -P -v /dev/shm:/dev/shm mcp/selenium-node-chrome
+  pre_ci_boot:
+    options: --link hub:hub
+  ci:
+    # Install Gradle 4.2 for java code compile
+    - cd $SHIPPABLE_BUILD_DIR
+    - if [[ ! -d "$GRADLE_HOME" ]]; then wget https://services.gradle.org/distributions/gradle-4.2-bin.zip  && unzip gradle-4.2-bin.zip ; fi
+    - $GRADLE_HOME/bin/gradle clean build
+
+    # E2E test
+    - $GRADLE_HOME/bin/gradle runTestsInParallel
+  on_success:
+  - docker rm -f hub chromenode1 chromenode2 chromenode3
+  - cp -rf $SHIPPABLE_BUILD_DIR/build/reports/cucumber/*.xml $GRADLE_TEST_RESULTS_DIR
+  on_failure:
+  - docker rm -f hub chromenode1 chromenode2 chromenode3
+  - cp -rf $SHIPPABLE_BUILD_DIR/build/reports/cucumber/*.xml $GRADLE_TEST_RESULTS_DIR
+integrations:
+  notifications:
+  - integrationName: moc-Slack-integration
+    type: slack
+    recipients:
+    - '#mcp-e2e'
+    branches:
+      only:
+      - master
+    on_success: change
+    on_failure: always
