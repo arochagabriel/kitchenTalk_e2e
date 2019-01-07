@@ -3,7 +3,8 @@ pipeline {
   stages {
     stage('Clean') {
       steps {
-        sh '''docker network rm grid
+        sh '''if [[ -n $(docker ps -aqf "name=hub") ]]; then docker stop hub && docker rm hub; fi
+docker network rm grid
 docker rm -vf selenium/hub'''
       }
     }
