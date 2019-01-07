@@ -15,11 +15,6 @@ docker run -d --net grid --name chrome -e HUB_HOST=selenium-hub -v /dev/shm:/dev
       steps {
         sh './gradlew regressionSuite -Dcucumber.tags="@regression" -Dcucumber.glue="steps"'
       }
-      post {
-      always {
-        sh 'docker rm -f selenium-hub chrome'
-          }
-        }
     }
     stage('Report') {
       steps {
