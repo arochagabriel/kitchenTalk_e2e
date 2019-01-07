@@ -5,7 +5,7 @@ pipeline {
       steps {
         sh '''docker network create grid
 docker run -d -p 4444:4444 --net grid --name selenium-hub selenium/hub
-docker run -d --link selenium-hub:hub -v /dev/shm:/dev/shm selenium/node-chrome'''
+docker run -d --net grid -e HUB_HOST=selenium-hub -v /dev/shm:/dev/shm selenium/node-chrome'''
       }
     }
     stage('Test') {
