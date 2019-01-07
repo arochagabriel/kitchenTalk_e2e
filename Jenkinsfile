@@ -1,9 +1,9 @@
 pipeline {
   agent any
   stages {
-    stage('Setting Up Selenium Grid') {
+    stage('Setting up') {
       steps {
-        sh 'sh "docker network create ${network}"'
+        echo 'Hello'
       }
     }
   }
