@@ -3,9 +3,7 @@ pipeline {
   stages {
     stage('Clean') {
       steps {
-        sh '''if [[ -n $(docker ps -aqf "name=hub") ]]; then docker stop hub && docker rm hub; fi
-docker network rm grid
-docker rm -vf selenium/hub'''
+        sh 'docker rm -vf selenium/hub'
       }
     }
     stage('Setting up Selenium Grid') {
