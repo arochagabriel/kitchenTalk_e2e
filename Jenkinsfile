@@ -30,4 +30,3 @@ docker run -d --net grid -e HUB_HOST=selenium-hub -v /dev/shm:/dev/shm selenium/
       }
     }
   }
-}
