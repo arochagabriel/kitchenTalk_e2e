@@ -18,5 +18,5 @@ Feature: Register
 
     Examples:
       | gender | firstname | lastname | day | month  | year | email             | password |
-      | Female | Elsa      | Brozo    | 15  | August | 1986 | ebrozo@correo.com | 123456   |
+      | Female | Elsas      | Brozos    | 15  | August | 1986 | ebrozo@correo.com | 123456   |
 
