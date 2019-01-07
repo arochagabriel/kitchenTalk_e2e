@@ -1,11 +1,6 @@
 pipeline {
   agent any
   stages {
-    stage('Clean') {
-      steps {
-        sh 'docker rm -vf selenium/hub'
-      }
-    }
     stage('Setting up Selenium Grid') {
       steps {
         sh '''docker network create grid
