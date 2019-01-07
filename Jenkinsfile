@@ -3,6 +3,7 @@ pipeline {
   stages {
     stage('Setting up Selenium Grid') {
       steps {
+        sh 'if [[ -n $(docker ps -aqf "name=selenium-hub") ]]; then docker stop selenium-hub && docker rm selenium-hub; fi'
         sh '''docker network create grid
 docker run -d -p 4444:4444 --net grid --name selenium-hub selenium/hub
 docker run -d --net grid -e HUB_HOST=selenium-hub -v /dev/shm:/dev/shm selenium/node-chrome'''
@@ -15,7 +16,7 @@ docker run -d --net grid -e HUB_HOST=selenium-hub -v /dev/shm:/dev/shm selenium/
     }
     stage('Report') {
       steps {
-        cucumber fileIncludePattern: '**/build/cucumber-report/cucumber.json', sortingMethod: 'ALPHABETICAL'
+        cucumber(fileIncludePattern: '**/build/cucumber-report/cucumber.json', sortingMethod: 'ALPHABETICAL')
       }
     }
   }
