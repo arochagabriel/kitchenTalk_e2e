@@ -15,7 +15,7 @@ docker run -d --net grid -e HUB_HOST=selenium-hub -v /dev/shm:/dev/shm selenium/
     }
     stage('Report') {
       steps {
-        cucumber 'build/cucumber-report/cucumber.json'
+        cucumber '\'**/*.json\''
       }
     }
   }
