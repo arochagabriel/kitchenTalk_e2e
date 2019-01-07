@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-    dockerfile {
-      filename 'docker-compose.yml'
-    }
-
-  }
+  agent any
   stages {
     stage('Setting Up Selenium Grid') {
       steps {
