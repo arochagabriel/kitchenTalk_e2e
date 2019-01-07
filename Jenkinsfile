@@ -4,7 +4,7 @@ pipeline {
     stage('Clean') {
       steps {
         sh '''docker network rm grid
-docker rm -vf selenium/gub'''
+docker rm -vf selenium/hub'''
       }
     }
     stage('Setting up Selenium Grid') {
