@@ -22,8 +22,8 @@ pipeline {
             }
         }
         stage('Report') {
-            steps {
-                cucumber(fileIncludePattern: '**/build/cucumber-report/cucumber.json', sortingMethod: 'ALPHABETICAL')
+            always {
+                cucumber(fileIncludePattern: 'build/cucumber-report/cucumber.json', sortingMethod: 'ALPHABETICAL')
             }
         }
     }
