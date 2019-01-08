@@ -24,6 +24,7 @@ pipeline {
 
             }
         }
+    }
         post {
             always {
                 node('master') {
@@ -38,4 +39,3 @@ pipeline {
         }
     }
 
-}
