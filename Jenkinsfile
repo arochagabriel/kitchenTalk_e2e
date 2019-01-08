@@ -19,7 +19,7 @@ pipeline {
                 always {
                     junit 'build/cucumber-report/*.xml'
                     cucumber fileIncludePattern: '**/*.json', jsonReportDirectory: 'build/cucumber-report', sortingMethod: 'ALPHABETICAL'
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/cucumber-report/', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
+                    publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, includes: '**/*.css, **/*.js', keepAll: true, reportDir: 'build/courgette-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
                 }
             }
         }
