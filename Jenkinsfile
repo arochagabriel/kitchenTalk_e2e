@@ -14,8 +14,6 @@ pipeline {
     stage('Test') {
       steps {
         sh './gradlew regressionSuite -Dcucumber.tags="@regression" -Dcucumber.glue="steps"'
-        sh '''docker rm -f selenium-hub chrome
-    docker network rm grid'''
       }
     }
     stage('Report') {
