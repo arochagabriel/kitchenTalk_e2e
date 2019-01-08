@@ -19,23 +19,23 @@ pipeline {
                 always {
                     junit 'build/cucumber-report/*.xml'
                     cucumber fileIncludePattern: '**/*.json', jsonReportDirectory: 'build/cucumber-report', sortingMethod: 'ALPHABETICAL'
-                    publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, includes: 'build/courgette-report/*', keepAll: true, reportDir: 'build/courgette-report*', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/courgette-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
                 }
+
             }
         }
+        post {
+            always {
+                node('master') {
+                    sh 'docker rm -vf chrome'
+                    sh 'docker rm -vf selenium-hub'
+                    sh 'docker network rm grid'
+                }
 
-    }
-    post {
-        always {
-            node('master') {
-                sh 'docker rm -vf chrome'
-                sh 'docker rm -vf selenium-hub'
-                sh 'docker network rm grid'
+
             }
 
-
         }
-
     }
+
 }
-
