@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 				plugin = {
 						"pretty",
 						"json:build/cucumber-report/cucumber.json",
-						"html:build/cucumber-report/cucumber",
+						"html:build/cucumber-report/cucumber.html",
 						"junit:build/cucumber-report/cucumber.xml"},
 				strict = true
 		))
