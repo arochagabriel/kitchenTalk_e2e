@@ -22,8 +22,11 @@ pipeline {
             }
         }
         stage('Report') {
-            always {
-                cucumber(fileIncludePattern: 'build/cucumber-report/cucumber.json', sortingMethod: 'ALPHABETICAL')
+            steps {
+                // Cucumber report plugin
+                cucumber fileIncludePattern: 'build/cucumber-report/*.json', sortingMethod: 'ALPHABETICAL'
+                //publishHTML
+                ([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/home/reports', reportFiles: 'reports.html', reportName: 'Performance Test Report', reportTitles: ''])
             }
         }
     }
