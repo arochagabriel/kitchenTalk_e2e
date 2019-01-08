@@ -19,6 +19,7 @@ pipeline {
                 always {
                     junit 'build/cucumber-report/*.xml'
                     cucumber fileIncludePattern: 'build/cucumber-report/*.json', sortingMethod: 'ALPHABETICAL'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'build/courgette-report', reportFiles: 'index.html', reportName: 'Performance Test Report', reportTitles: ''])
                 }
             }
         }

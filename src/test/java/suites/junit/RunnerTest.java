@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 @RunWith(Courgette.class)
 @CourgetteOptions(
 		threads = 1,
-		runLevel = CourgetteRunLevel.FEATURE,
+		runLevel = CourgetteRunLevel.SCENARIO,
 		rerunFailedScenarios = false,
 		showTestOutput = true,
 		reportTargetDir = "build",
