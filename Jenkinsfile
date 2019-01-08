@@ -26,9 +26,11 @@ pipeline {
     }
     post {
         always {
-            sh "docker rm -vf chrome"
-            sh "docker rm -vf selenium-hub"
-            sh "docker network rm grid"
+            node('master') {
+                sh "docker rm -vf chrome"
+                sh "docker rm -vf selenium-hub"
+                sh "docker network rm grid"
+            }
         }
     }
 }
