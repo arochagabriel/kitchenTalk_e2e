@@ -18,16 +18,11 @@ pipeline {
             post {
                 always {
                     junit 'build/cucumber-report/*.xml'
+                    cucumber fileIncludePattern: 'build/cucumber-report/*.json', sortingMethod: 'ALPHABETICAL'
                 }
             }
         }
-        stage('Report') {
-            steps {
-                // Cucumber report plugin
-                cucumber fileIncludePattern: 'build/cucumber-report/*.json', sortingMethod: 'ALPHABETICAL'
-                publishHTML ([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/home/reports', reportFiles: 'reports.html', reportName: 'Performance Test Report', reportTitles: ''])
-            }
-        }
+
     }
     post {
         always {
@@ -42,3 +37,4 @@ pipeline {
 
     }
 }
+
