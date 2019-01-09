@@ -31,8 +31,8 @@ pipeline {
                 always {
                     junit 'build/cucumber-report/*.xml'
                     cucumber fileIncludePattern: '**/*.json', jsonReportDirectory: 'build/cucumber-report', sortingMethod: 'ALPHABETICAL'
-                    archiveArtifacts artifacts: 'build/courgette-report/*', caseSensitive: false, defaultExcludes: false
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, escapeUnderscores: false, includes: 'build/courgette-report/*', keepAll: true, reportDir: 'build/courgette-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
+                   // archiveArtifacts artifacts: 'build/courgette-report/*', caseSensitive: false, defaultExcludes: false
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, escapeUnderscores: false, includes: '*.*,*/*', keepAll: true, reportDir: 'build/courgette-report/', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
 
                 }
 
