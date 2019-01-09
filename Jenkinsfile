@@ -1,4 +1,6 @@
 def seleniumHub = 'selenium-hub-${BUILD_NUMBER}'
+def chromeNode = 'chrome-node-${BUILD_NUMBER}'
+def network = 'grid-${BUILD_NUMBER}'
 
 pipeline {
     agent any
@@ -6,11 +8,11 @@ pipeline {
         stage('Setting up Selenium Grid') {
             steps {
                 sh """if [[ -n \$(docker ps -aqf "name=${seleniumHub}") ]]; then docker stop ${seleniumHub} && docker rm ${seleniumHub}; fi
-    if [[ -n \$(docker ps -aqf "name=chrome") ]]; then docker stop chrome && docker rm chrome; fi
-    if [[ -n \$(docker network inspect grid) ]]; then docker network rm grid; fi"""
-                sh """docker network create grid
-    docker run -d -p 4444:4444 --net grid --name ${seleniumHub} selenium/hub
-    docker run -d --net grid --name chrome -e HUB_HOST=${seleniumHub} -v /dev/shm:/dev/shm selenium/node-chrome"""
+    if [[ -n \$(docker ps -aqf "name=${chromeNode}") ]]; then docker stop ${chromeNode} && docker rm ${chromeNode}; fi
+    if [[ -n \$(docker network inspect ${network}) ]]; then docker network rm ${network}; fi"""
+                sh """docker network create ${network}
+    docker run -d -p 4444:4444 --net ${network} --name ${seleniumHub} selenium/hub
+    docker run -d --net ${network} --name ${chromeNode} -e HUB_HOST=${seleniumHub} -v /dev/shm:/dev/shm selenium/node-chrome"""
             }
 
         }
@@ -30,9 +32,9 @@ pipeline {
         post {
             always {
                 node('master') {
-                    sh 'docker rm -vf chrome'
-                    sh 'docker rm -vf ${seleniumHub}'
-                    sh 'docker network rm grid'
+                    sh "docker rm -vf ${chromeNode}"
+                    sh "docker rm -vf ${seleniumHub}"
+                    sh "docker network rm ${network}"
                 }
 
 
