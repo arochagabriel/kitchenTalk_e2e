@@ -17,7 +17,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'build/test-result/test/*.xml'
+                    junit 'build/cucumber-report/*.xml'
                     cucumber fileIncludePattern: '**/*.json', jsonReportDirectory: 'build/cucumber-report', sortingMethod: 'ALPHABETICAL'
                 }
 
