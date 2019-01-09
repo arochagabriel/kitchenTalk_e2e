@@ -17,10 +17,8 @@ pipeline {
             }
             post {
                 always {
-                    junit 'build/cucumber-report/*.xml'
+                    junit 'build/test-result/test/*.xml'
                     cucumber fileIncludePattern: '**/*.json', jsonReportDirectory: 'build/cucumber-report', sortingMethod: 'ALPHABETICAL'
-                   archiveArtifacts artifacts: 'build/cucumber-report/', defaultExcludes: false
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/cucumber-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
                 }
 
             }
