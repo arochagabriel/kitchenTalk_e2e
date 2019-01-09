@@ -1,11 +1,11 @@
-def seleniumHub = 'selenium-hub'
+def seleniumHub = 'selenium-hub-${BUILD_NUMBER}'
 
 pipeline {
     agent any
     stages {
         stage('Setting up Selenium Grid') {
             steps {
-                sh """if [[ -n \$(docker ps -aqf "name= ${seleniumHub}") ]]; then docker stop ${seleniumHub} && docker rm ${seleniumHub}; fi
+                sh """if [[ -n \$(docker ps -aqf "name=${seleniumHub}") ]]; then docker stop ${seleniumHub} && docker rm ${seleniumHub}; fi
     if [[ -n \$(docker ps -aqf "name=chrome") ]]; then docker stop chrome && docker rm chrome; fi
     if [[ -n \$(docker network inspect grid) ]]; then docker network rm grid; fi"""
                 sh """docker network create grid
